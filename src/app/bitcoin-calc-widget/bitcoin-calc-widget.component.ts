@@ -11,7 +11,7 @@ export class BitcoinCalcWidgetComponent implements OnInit {
 
   btcBought: string;
   btcToday: number;
-  btcAmount: number;
+  btcAmount: number = 0;
 
   profit;
   profitPercentage;
@@ -50,7 +50,10 @@ export class BitcoinCalcWidgetComponent implements OnInit {
       this.lossPercentage = lp;
     }
 
-    form.resetForm();
+    // form.resetForm();
+
+    this.btcBought = "";
+    this.btcAmount = 0;
   }
 
   getCurrentBTC() {
