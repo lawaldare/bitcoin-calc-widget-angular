@@ -1,4 +1,10 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+} from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { BitcoinService } from "../bitcoin.service";
 import { takeUntil } from "rxjs/operators";
@@ -22,6 +28,8 @@ export class BitcoinCalcWidgetComponent implements OnInit, OnDestroy {
   resultReady: boolean = false;
 
   private ngOnDestroy$ = new Subject<void>();
+
+  @Output() newValueChanged = new EventEmitter<number>();
 
   constructor(private bitcoinService: BitcoinService) {}
 
@@ -56,6 +64,8 @@ export class BitcoinCalcWidgetComponent implements OnInit, OnDestroy {
 
     this.btcBought = "";
     this.btcAmount = 0;
+
+    this.newValueChanged.emit(1755);
   }
 
   getCurrentBTC() {
