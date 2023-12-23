@@ -1,32 +1,55 @@
 <div class="container card">
-
   <h1 class="header">Bitcoin Calculation</h1>
 
   <form class="ui form" #btcForm="ngForm" (ngSubmit)="calculate(btcForm)">
     <div class="field">
       <label>How much was 1 BTC in USD($) when you bought it?</label>
-      <input type="text" (keypress)='isNumberKey($event)' (ngModelChange)='checkIfAmountIsValid($event);'
-        name="btcBought" [ngModel]="btcBought" required autocomplete="off">
+      <input
+        type="text"
+        (keypress)="isNumberKey($event)"
+        (ngModelChange)="checkIfAmountIsValid($event)"
+        name="btcBought"
+        [ngModel]="btcBought"
+        required
+        autocomplete="off"
+      />
     </div>
     <div class="field">
       <label>Current amount of 1 BTC in USD($)</label>
-      <input type="number" name="btcToday" [(ngModel)]="btcToday" readonly>
+      <input type="number" name="btcToday" [(ngModel)]="btcToday" readonly />
     </div>
     <div class="field">
       <label>How many BTC did you buy?</label>
-      <input type="number" name="btcAmount" [(ngModel)]="btcAmount" required autocomplete="off">
+      <input
+        type="number"
+        name="btcAmount"
+        [(ngModel)]="btcAmount"
+        required
+        autocomplete="off"
+      />
     </div>
-    <button class="ui button" type="submit" [disabled]="btcForm.invalid">Calculate!</button>
+    <button class="ui button" type="submit" [disabled]="btcForm.invalid">
+      Calculate!
+    </button>
   </form>
 
   <div class="comment" *ngIf="resultReady">
     <h4>Result:</h4>
-    <p style="color:green; font-weight: bold;" class="status" *ngIf="status === 'profit'">
-      Great! You made a profit of {{ profit | currency }} ({{ profitPercentage }}%)
+    <p
+      style="color: green; font-weight: bold"
+      class="status"
+      *ngIf="status === 'profit'"
+    >
+      Great! You made a profit of {{ profit | currency }} ({{
+        profitPercentage
+      }}%)
     </p>
-    <p style="color:red; font-weight: bold;" class="status" *ngIf="status === 'loss'">
+    <p
+      style="color: red; font-weight: bold"
+      class="status"
+      *ngIf="status === 'loss'"
+    >
       Oops! You made a loss of {{ loss | currency }} ({{ lossPercentage }}%)
     </p>
   </div>
-
 </div>

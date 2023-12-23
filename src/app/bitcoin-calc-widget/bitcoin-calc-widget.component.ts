@@ -1,14 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { BitcoinService } from '../bitcoin.service';
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { NgForm } from "@angular/forms";
+import { BitcoinService } from "../bitcoin.service";
+import { takeUntil } from "rxjs/operators";
+import { Subject } from "rxjs";
 
 @Component({
-  selector: 'app-bitcoin-calc-widget',
-  templateUrl: './bitcoin-calc-widget.component.html',
-  styleUrls: ['./bitcoin-calc-widget.component.scss']
+  selector: "app-bitcoin-calc-widget",
+  templateUrl: "./bitcoin-calc-widget.component.html",
+  styleUrls: ["./bitcoin-calc-widget.component.scss"],
 })
-export class BitcoinCalcWidgetComponent implements OnInit {
-
+export class BitcoinCalcWidgetComponent implements OnInit, OnDestroy {
   btcBought: string;
   btcToday: number;
   btcAmount: number = 0;
@@ -20,8 +21,9 @@ export class BitcoinCalcWidgetComponent implements OnInit {
   status: string;
   resultReady: boolean = false;
 
+  private ngOnDestroy$ = new Subject<void>();
 
-  constructor(private bitcoinService: BitcoinService) { }
+  constructor(private bitcoinService: BitcoinService) {}
 
   ngOnInit(): void {
     this.getCurrentBTC();
@@ -33,19 +35,19 @@ export class BitcoinCalcWidgetComponent implements OnInit {
     let btcAmount = form.value.btcAmount;
     let btcToday = form.value.btcToday;
 
-    let profit = (btcToday * btcAmount) - (btcBought * btcAmount);
-    let loss = (btcBought * btcAmount) - (btcToday * btcAmount);
+    let profit = btcToday * btcAmount - btcBought * btcAmount;
+    let loss = btcBought * btcAmount - btcToday * btcAmount;
     let profitPercentage = (profit / (btcBought * btcAmount)) * 100;
     let pp = Math.round(profitPercentage);
     let lossPercentage = (loss / (btcBought * btcAmount)) * 100;
     let lp = Math.round(lossPercentage);
 
     if (profit > 0) {
-      this.status = 'profit';
+      this.status = "profit";
       this.profit = profit;
       this.profitPercentage = pp;
     } else if (profit < 0) {
-      this.status = 'loss';
+      this.status = "loss";
       this.loss = loss;
       this.lossPercentage = lp;
     }
@@ -57,9 +59,12 @@ export class BitcoinCalcWidgetComponent implements OnInit {
   }
 
   getCurrentBTC() {
-    this.bitcoinService.getCurrentBTC().subscribe((data: any) => {
-      this.btcToday = Math.round(data.bpi.USD.rate_float);
-    })
+    this.bitcoinService
+      .getCurrentBTC()
+      .pipe(takeUntil(this.ngOnDestroy$))
+      .subscribe((data: any) => {
+        this.btcToday = data;
+      });
   }
 
   numberToCurrencyFormat(amount: number): string {
@@ -88,4 +93,8 @@ export class BitcoinCalcWidgetComponent implements OnInit {
     this.btcBought = this.numberToCurrencyFormat(this.currencyToNumber(amount));
   }
 
+  ngOnDestroy() {
+    this.ngOnDestroy$.next();
+    this.ngOnDestroy$.complete();
+  }
 }
